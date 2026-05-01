@@ -1,5 +1,6 @@
 
 using ConferenceManager.Controllers;
+using ConferenceManager.Middleware;
 using ConferenceManager.Model;
 using ConferenceManager.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -17,7 +18,6 @@ namespace ConferenceManager
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
 
             builder.Services.AddEndpointsApiExplorer();
@@ -30,6 +30,12 @@ namespace ConferenceManager
 
             builder.Services.AddScoped<IEventService, EventService>();
             builder.Services.AddScoped<IEventModel, EventModel>();
+            builder.Services.AddScoped<IAttendeeService, AttendeeService>();
+            builder.Services.AddScoped<IAttendeeModel, AttendeeModel>();
+            builder.Services.AddScoped<ISpeakerService, SpeakerService>();
+            builder.Services.AddScoped<ISpeakerModel, SpeakerModel>();
+
+            builder.Services.AddTransient<AuthorisationMiddleware>();
 
             var key = Encoding.UTF8.GetBytes("0123456789-0123456789-0123456789");
             builder.Services.AddAuthentication(options =>
@@ -54,6 +60,7 @@ namespace ConferenceManager
             var app = builder.Build();
 
             app.UseHealthChecks("/health");
+            app.UseMiddleware<AuthorisationMiddleware>();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -65,7 +72,6 @@ namespace ConferenceManager
 
             app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 
