@@ -1,11 +1,13 @@
-﻿using ConferenceManager.Service;
+﻿using ConferenceManager.Model.Models;
+using ConferenceManager.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConferenceManager.Controllers
 {
-    [Route("[controller]")]
     [ApiController]
+    [Route("[controller]")]
     public class EventsController(IEventService eventService) : ControllerBase
     {
         private readonly IEventService _eventService = eventService;
@@ -21,6 +23,14 @@ namespace ConferenceManager.Controllers
         public IActionResult GetEventById(int id)
         {
             return Ok(_eventService.GetEvent(id));
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult PostEvent(Event eventObject)
+        {   
+            Event postedEvent = _eventService.PostEvent(eventObject);
+            return Created($"/events/${postedEvent.Id}", postedEvent);
         }
     }
 }

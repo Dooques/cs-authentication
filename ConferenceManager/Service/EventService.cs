@@ -6,7 +6,8 @@ namespace ConferenceManager.Service
     public interface IEventService
     {
         public Event GetEvent(int id);
-        public List<Event> GetEvents();
+        public IEnumerable<Event> GetEvents();
+        public Event PostEvent(Event @event);
     }
     public class EventService(IEventModel eventModel) : IEventService
     {
@@ -17,9 +18,14 @@ namespace ConferenceManager.Service
             return _eventModel.FetchEvent(id);
         }
 
-        public List<Event> GetEvents()
+        public IEnumerable<Event> GetEvents()
         {
             return _eventModel.FetchEvents();
+        }
+
+        public Event PostEvent(Event @event)
+        {
+            return _eventModel.InsertEvent(@event);
         }
 
     }
